@@ -1,36 +1,35 @@
 package com.example.movieapp
 
-import android.graphics.RenderEffect
-import android.os.Build
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RenderEffect.*
-import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+// Movie data class
+data class Movie(
+    val id: Int,
+    val title: String,
+    val description: String,
+    val imageRes: Int
+)
 
 @Composable
 fun BottomNavApp() {
     var selectedItem by remember { mutableStateOf(0) }
-    val items = listOf("Home", "Category")
+    var showDetail by remember { mutableStateOf(false) }
+    var selectedMovie by remember { mutableStateOf<Movie?>(null) }
+
+    val items = listOf("Home", "Category", "My Page")
 
     Scaffold(
         bottomBar = {
@@ -44,11 +43,15 @@ fun BottomNavApp() {
                             when (item) {
                                 "Home" -> Icon(Icons.Filled.Home, contentDescription = "Home")
                                 "Category" -> Icon(Icons.Filled.List, contentDescription = "Category")
+                                "My Page" -> Icon(Icons.Filled.Person, contentDescription = "My Page")
                             }
                         },
                         label = { Text(item) },
                         selected = selectedItem == index,
-                        onClick = { selectedItem = index },
+                        onClick = {
+                            selectedItem = index
+                            showDetail = false
+                        },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = androidx.compose.ui.graphics.Color(0xFFE50914),
                             selectedTextColor = androidx.compose.ui.graphics.Color(0xFFE50914),
@@ -66,100 +69,98 @@ fun BottomNavApp() {
             contentAlignment = Alignment.TopStart
         ) {
             when (selectedItem) {
-                0 -> HomePage()
-                1 -> CategoryPage()
-            }
-        }
-    }
-}
-
-@Composable
-fun StartPageFullImage(onStartClicked: () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize()) {
-
-        // 背景图全屏
-        Image(
-            painter = painterResource(id = R.drawable.img1),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        // 模糊 + 半透明背景层
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(24.dp)
-                .graphicsLayer {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        renderEffect = RenderEffect.
-                        createBlurEffect(30f, 30f, android.graphics.Shader.TileMode.CLAMP).asComposeRenderEffect()
+                0 -> {
+                    if (showDetail && selectedMovie != null) {
+                        MovieDetailPage(movie = selectedMovie!!, onBack = { showDetail = false })
+                    } else {
+                        HomePage(onMovieClick = {
+                            selectedMovie = it
+                            showDetail = true
+                        })
                     }
                 }
-                .background(Color(0xAA000000), shape = RoundedCornerShape(16.dp)) // 半透明黑底
-                .padding(24.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Your cinema adventure\nbegins here!",
-                    style = MaterialTheme.typography.headlineLarge,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Button(
-                    onClick = onStartClicked,
-                    shape = RoundedCornerShape(24.dp),
-                    modifier = Modifier
-                        .width(200.dp)
-                        .height(48.dp)
-                ) {
-                    Text(
-                        text = "Start",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
+                1 -> CategoryPage()
+                2 -> MyPage()
             }
         }
     }
 }
 
 @Composable
-fun StartPage(onStartClicked: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Button(
-            onClick = onStartClicked
-        ) {
-            Text(text = "Start", style = MaterialTheme.typography.titleLarge)
-        }
-    }
-}
+fun HomePage(onMovieClick: (Movie) -> Unit) {
+    val movies = listOf(
+        Movie(1, "Oppenheimer", "A classic by Christopher Nolan", R.drawable.img1),
+        Movie(2, "The last of us, Part 1", "Famous video game adaptation", R.drawable.img2)
+    )
 
-@Composable
-fun HomePage() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
             text = "Featured",
-            style = androidx.compose.material3.MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
+        movies.forEach { movie ->
+            MoviePoster(movie = movie, onClick = onMovieClick)
+        }
+    }
+}
+
+@Composable
+fun MoviePoster(movie: Movie, onClick: (Movie) -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick(movie) },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column {
+            Image(
+                painter = painterResource(id = movie.imageRes),
+                contentDescription = movie.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+            )
+            Text(
+                text = movie.title,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun MovieDetailPage(movie: Movie, onBack: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+    ) {
+        Button(onClick = onBack) {
+            Text("Back")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = movie.title, style = MaterialTheme.typography.headlineLarge)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = movie.description, style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(16.dp))
+        Image(
+            painter = painterResource(id = movie.imageRes),
+            contentDescription = "Movie Poster",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
@@ -167,9 +168,16 @@ fun HomePage() {
 fun CategoryPage() {
     Text(
         "Category",
-        style = androidx.compose.material3.MaterialTheme.typography.headlineLarge,
-        color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+        style = MaterialTheme.typography.headlineLarge,
         modifier = Modifier.padding(24.dp)
     )
+}
 
+@Composable
+fun MyPage() {
+    Text(
+        "My Page",
+        style = MaterialTheme.typography.headlineLarge,
+        modifier = Modifier.padding(24.dp)
+    )
 }

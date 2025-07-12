@@ -13,9 +13,12 @@ import com.example.movieapp.R
 val LuxuryFont = FontFamily(
     Font(R.font.playfair_display_regular, FontWeight.Normal)
 )
+val BoldFunny = FontFamily(
+    Font(R.font.bold, FontWeight.Normal)
+)
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFE50914),      // Netflix红
+    primary = Color(0xFFE50914),
     onPrimary = Color.White,
     background = Color.Black,
     onBackground = Color.White,
@@ -49,7 +52,10 @@ val AppTypography = Typography(
         fontSize = 16.sp,
         color = Color.White
     )
+
 )
+
+
 
 @Composable
 fun MoviesAppTheme(
