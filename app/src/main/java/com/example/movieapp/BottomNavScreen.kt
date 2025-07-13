@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
+
 
 // Movie data class
 data class Movie(
@@ -175,8 +178,16 @@ fun CategoryPage() {
 
 @Composable
 fun MyPage() {
+    val context = LocalContext.current
+
+    // Launch LoginActivity when this Composable loads
+    LaunchedEffect(Unit) {
+        context.startActivity(Intent(context, LoginActivity::class.java))
+    }
+
+    // Optional fallback content (won’t be seen if activity starts right away)
     Text(
-        "My Page",
+        "Redirecting to Login...",
         style = MaterialTheme.typography.headlineLarge,
         modifier = Modifier.padding(24.dp)
     )
