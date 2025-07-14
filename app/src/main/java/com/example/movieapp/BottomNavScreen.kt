@@ -1,4 +1,4 @@
-package com.example.movieapp
+package com.example.moviesapp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -13,16 +13,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import android.content.Intent
-import androidx.compose.ui.platform.LocalContext
-
+import com.example.movieapp.R
 
 // Movie data class
 data class Movie(
     val id: Int,
     val title: String,
     val description: String,
+    val imageRes: Int,
+    val summary:String,
+    val shortMovie:String
+)
+
+data class Category(
+    val id: Int,
+    val category: String,
     val imageRes: Int
 )
 
@@ -89,12 +96,30 @@ fun BottomNavApp() {
     }
 }
 
+
+@Composable
+fun MyPage() {
+    Text(
+        "My Page",
+        style = MaterialTheme.typography.headlineLarge,
+        modifier = Modifier.padding(24.dp)
+    )
+}
+
+
+
 @Composable
 fun HomePage(onMovieClick: (Movie) -> Unit) {
     val movies = listOf(
-        Movie(1, "Oppenheimer", "A classic by Christopher Nolan", R.drawable.img1),
-        Movie(2, "The last of us, Part 1", "Famous video game adaptation", R.drawable.img2)
-    )
+        Movie(1, "Oppenheimer", "A classic by Christopher Nolan", R.drawable.img1,
+            "A dramatization of the life story of J. Robert Oppenheimer, the physicist who had a large hand in the development of the atomic bomb, thus helping end World War 2. We see his life from university days all the way to post-WW2, where his fame saw him embroiled in political machinations.",
+            "https://youtu.be/hd93UMcbebA?feature=shared"),
+        Movie(2, "The last of us, Part 1", "Famous video game adaptation", R.drawable.img2,
+            "sample link",
+            "link"),
+        Movie(3, "3 body problem", "SF by creaters of 'Game of Thrones'", R.drawable.img3,
+            "sample link",
+            "link"))
 
     Column(
         modifier = Modifier
@@ -137,6 +162,35 @@ fun MoviePoster(movie: Movie, onClick: (Movie) -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(8.dp)
             )
+
+
+        }
+    }
+
+}
+
+@Composable
+fun CategoryItem(category: Category, onClick: (Category) -> Unit)
+{
+    Card(modifier = Modifier
+        .fillMaxSize()
+        .clickable { onClick(category) },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp))
+    {
+        Column {
+            Image(
+                painter = painterResource(id = category.imageRes),
+                contentDescription = category.category,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+            )
+            Text(
+                text = category.category,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }
@@ -164,31 +218,47 @@ fun MovieDetailPage(movie: Movie, onBack: () -> Unit) {
                 .height(300.dp),
             contentScale = ContentScale.Crop
         )
+
+        Text(
+            text = movie.summary,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(8.dp)
+        )
+
+        Text(
+            text = movie.shortMovie,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(8.dp)
+        )
     }
 }
 
 @Composable
 fun CategoryPage() {
-    Text(
-        "Category",
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = Modifier.padding(24.dp)
+    val categories = listOf(
+        Category(1, "Action", R.drawable.action_posters),
+        Category(2, "Science Fiction", R.drawable.action_posters),
+        Category(3, "Comedy", R.drawable.action_posters),
+        Category(4, "Horror", R.drawable.action_posters),
+        Category(5, "Romance", R.drawable.action_posters)
     )
-}
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            "Category",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(8.dp)
+        )
+        categories.forEach { category ->
+            CategoryItem(category = category, onClick = {})
+        }
 
-@Composable
-fun MyPage() {
-    val context = LocalContext.current
-
-    // Launch LoginActivity when this Composable loads
-    LaunchedEffect(Unit) {
-        context.startActivity(Intent(context, LoginActivity::class.java))
     }
-
-    // Optional fallback content (won’t be seen if activity starts right away)
-    Text(
-        "Redirecting to Login...",
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = Modifier.padding(24.dp)
-    )
 }
+
+

@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import com.example.movieapp.ui.theme.MoviesAppTheme
 import com.example.movieapp.ui.theme.StartPageFullImage
+import com.example.moviesapp.BottomNavApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,7 +17,7 @@ class MainActivity : ComponentActivity() {
                 if (showStartPage) {
                     StartPageFullImage(onStartClicked = { showStartPage = false })
                 } else {
-                    BottomNavApp()
+                     BottomNavApp()
                 }
             }
         }
