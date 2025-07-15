@@ -368,7 +368,7 @@ fun MovieDetailPage(
                     .width(100.dp)
                     .height(36.dp)
             ) {
-                Text("Movie Recap", style = MaterialTheme.typography.bodySmall)
+                Text("Recap", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
