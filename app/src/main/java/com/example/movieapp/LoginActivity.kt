@@ -1,6 +1,7 @@
 package com.example.movieapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,12 +16,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api.RetrofitClient
-import com.example.model.LoginRequest
-import com.example.model.LoginResult
+import com.example.model.User
 import com.example.movieapp.ui.theme.BoldFunny
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.os.Bundle
+
 
 val bodyBold = androidx.compose.ui.text.TextStyle(
     fontFamily = BoldFunny,
@@ -29,24 +31,25 @@ val bodyBold = androidx.compose.ui.text.TextStyle(
     color = Color.White
 )
 
-
-
 class LoginActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
                 LoginScreen(
                     onLoginSuccess = { userId ->
-                        Toast.makeText(this, "Login successful! UserId: $userId", Toast.LENGTH_LONG).show()
-                        // TODO: Navigate to next screen here
+                        val intent = Intent().apply {
+                            putExtra("userId", userId)
+                        }
+                        setResult(RESULT_OK, intent)
+                        finish()
                     }
                 )
             }
         }
     }
 }
+
 
 @SuppressLint("ContextCastToActivity")
 @Composable
@@ -57,7 +60,8 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    var statusMessage by remember { mutableStateOf("") } // 🆕 For showing login status
+    var statusMessage by remember { mutableStateOf("") }
+    var isSignUpMode by remember { mutableStateOf(false) }
 
     val activity = LocalContext.current as? ComponentActivity
 
@@ -69,7 +73,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Login",
+            text = if (isSignUpMode) "Sign Up" else "Login",
             style = bodyBold,
             color = Color.Red
         )
@@ -117,7 +121,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 🔴 Show login error or status
         if (statusMessage.isNotEmpty()) {
             Text(
                 text = statusMessage,
@@ -140,26 +143,48 @@ fun LoginScreen(
                 isLoading = true
                 statusMessage = ""
 
-                val loginRequest = LoginRequest(username, password)
-
-                RetrofitClient.apiService.loginUser(loginRequest)
-                    .enqueue(object : Callback<LoginResult> {
-                        override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
-                            isLoading = false
-                            val loginResult = response.body()
-
-                            if (response.isSuccessful && loginResult?.status == "success") {
-                                loginResult.userId?.let { onLoginSuccess(it) }
-                            } else {
-                                statusMessage = loginResult?.message ?: "Invalid username or password"
+                if (isSignUpMode) {
+                    // Sign Up API call (POST)
+                    val newUser = User(username = username, password = password)
+                    RetrofitClient.apiService.registerUser(newUser)
+                        .enqueue(object : Callback<User> {
+                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                                isLoading = false
+                                if (response.isSuccessful && response.body() != null) {
+                                    statusMessage = "Registration successful. Please log in."
+                                    isSignUpMode = false
+                                } else {
+                                    statusMessage = "Registration failed: ${response.message()}"
+                                }
                             }
-                        }
 
-                        override fun onFailure(call: Call<LoginResult>, t: Throwable) {
-                            isLoading = false
-                            statusMessage = "Failed to connect to server: ${t.localizedMessage}"
-                        }
-                    })
+                            override fun onFailure(call: Call<User>, t: Throwable) {
+                                isLoading = false
+                                statusMessage = "Failed to register: ${t.localizedMessage}"
+                            }
+                        })
+                } else {
+                    // Login API call
+                    RetrofitClient.apiService.loginUser(username, password)
+                        .enqueue(object : Callback<List<User>> {
+                            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                                isLoading = false
+                                val users = response.body()
+
+                                if (response.isSuccessful && !users.isNullOrEmpty()) {
+                                    val userId = users[0].id.toString()
+                                    onLoginSuccess(userId)
+                                } else {
+                                    statusMessage = "Invalid username or password"
+                                }
+                            }
+
+                            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                                isLoading = false
+                                statusMessage = "Failed to connect: ${t.localizedMessage}"
+                            }
+                        })
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading
@@ -171,10 +196,22 @@ fun LoginScreen(
                     strokeWidth = 2.dp
                 )
             } else {
-                Text("Login")
+                Text(if (isSignUpMode) "Sign Up" else "Login")
             }
         }
 
+        // Toggle login/signup
+        TextButton(
+            onClick = { isSignUpMode = !isSignUpMode },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = if (isSignUpMode) "Already have an account? Login" else "Don't have an account? Sign Up",
+                color = Color.White
+            )
+        }
+
+        // Back button
         Button(
             onClick = { activity?.finish() },
             colors = ButtonDefaults.buttonColors(
@@ -183,7 +220,7 @@ fun LoginScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(top = 16.dp)
         ) {
             Text("Back to Start Page")
         }

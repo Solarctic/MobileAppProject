@@ -1,7 +1,9 @@
 package com.example.movieapp
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -57,7 +59,7 @@ fun BottomNavApp() {
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = androidx.compose.ui.graphics.Color(0xFF1A1A1A),
+                containerColor = Color(0xFF1A1A1A),
                 tonalElevation = 4.dp
             ) {
                 listOf("Home", "Category", "My Page").forEachIndexed { index, item ->
@@ -80,9 +82,9 @@ fun BottomNavApp() {
                             selectedMovie = null
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = androidx.compose.ui.graphics.Color(0xFFE50914),
-                            selectedTextColor = androidx.compose.ui.graphics.Color(0xFFE50914),
-                            indicatorColor = androidx.compose.ui.graphics.Color(0xFF330000)
+                            selectedIconColor = Color(0xFFE50914),
+                            selectedTextColor = Color(0xFFE50914),
+                            indicatorColor = Color(0xFF330000)
                         )
                     )
                 }
@@ -162,7 +164,7 @@ fun BottomNavApp() {
 }
 
 @Composable
-fun HomePage(scrollState: androidx.compose.foundation.ScrollState, onMovieClick: (Movie) -> Unit) {
+fun HomePage(scrollState: ScrollState, onMovieClick: (Movie) -> Unit) {
     val movies = listOf(
         Movie(1, "Oppenheimer",
             "He unleashed the power of the universe—and couldn't control what came next.",
@@ -179,7 +181,7 @@ fun HomePage(scrollState: androidx.compose.foundation.ScrollState, onMovieClick:
 fun CategoryPage(
     categories: List<Movie>,
     onCategoryClick: (Movie) -> Unit,
-    scrollState: androidx.compose.foundation.ScrollState
+    scrollState: ScrollState
 ) {
     Column(
         modifier = Modifier
@@ -222,7 +224,7 @@ fun CategoryDetailPage(
     category: Movie,
     onMovieClick: (Movie) -> Unit,
     onBack: () -> Unit,
-    scrollState: androidx.compose.foundation.ScrollState
+    scrollState: ScrollState
 ) {
     val movies = when (category.title) {
         "Sci-Fi" -> listOf(
@@ -270,7 +272,7 @@ fun MovieListSection(
     title: String,
     movies: List<Movie>,
     onMovieClick: (Movie) -> Unit,
-    scrollState: androidx.compose.foundation.ScrollState
+    scrollState: ScrollState
 ) {
     Column(
         modifier = Modifier
@@ -349,7 +351,7 @@ fun MovieDetailPage(
             modifier = Modifier.align(Alignment.TopEnd)
         ) {
             if (isFavorite) {
-                Icon(Icons.Filled.Favorite, contentDescription = "Unfavorite", tint = androidx.compose.ui.graphics.Color.Red)
+                Icon(Icons.Filled.Favorite, contentDescription = "Unfavorite", tint = Color.Red)
             } else {
                 Icon(Icons.Outlined.FavoriteBorder, contentDescription = "Favorite")
             }
@@ -359,7 +361,7 @@ fun MovieDetailPage(
         movie.videoUrl?.let { url ->
             Button(
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     context.startActivity(intent)
                 },
                 modifier = Modifier

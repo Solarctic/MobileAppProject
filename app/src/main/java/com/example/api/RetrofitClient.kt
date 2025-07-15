@@ -17,8 +17,8 @@ object RetrofitClient {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://localhost:3000/users")
-//            .baseUrl("http://192.168.1.10:3000/") // Replace with your backend URL or IP + port
+            //.baseUrl("http://localhost:3000/users")
+            .baseUrl("http://10.0.2.2:4000/") // ← Emulator access to host PC
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -28,3 +28,4 @@ object RetrofitClient {
         retrofit.create(ApiService::class.java)
     }
 }
+
