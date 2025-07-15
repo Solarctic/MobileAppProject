@@ -164,10 +164,13 @@ fun BottomNavApp() {
 @Composable
 fun HomePage(scrollState: androidx.compose.foundation.ScrollState, onMovieClick: (Movie) -> Unit) {
     val movies = listOf(
-        Movie(1, "Oppenheimer", "A classic by Christopher Nolan", R.drawable.img1,"https://www.youtube.com/watch?v=1Fg5iWmQjwk"),
-        Movie(2, "The last of us, Part 1", "Famous video game adaptation", R.drawable.img2),
-        Movie(3, "3-body problem", "Best sci-fi novel in China", R.drawable.img3),
-        Movie(4, "Interstellar", "Hard core but touched", R.drawable.img4)
+        Movie(1, "Oppenheimer",
+            "He unleashed the power of the universe—and couldn't control what came next.",
+            R.drawable.img1,
+            "https://www.youtube.com/watch?v=1Fg5iWmQjwk"),
+        Movie(2, "The last of us, Part 1", "When the world ends, what’s left is who we are.", R.drawable.img2,"https://www.youtube.com/watch?v=arIiRPOky80"),
+        Movie(3, "3-body problem", "When science meets the unknown, humanity faces extinction—or evolution.", R.drawable.img3,"https://www.youtube.com/watch?v=P4AJS0-Lhf4"),
+        Movie(4, "Interstellar", "Love transcends time. Hope defies gravity.", R.drawable.img4,"https://www.youtube.com/watch?v=xXOw_zbwew0")
     )
     MovieListSection(title = "Featured", movies = movies, onMovieClick = onMovieClick, scrollState = scrollState)
 }
@@ -223,24 +226,34 @@ fun CategoryDetailPage(
 ) {
     val movies = when (category.title) {
         "Sci-Fi" -> listOf(
-            Movie(101, "Interstellar", "Space exploration classic", R.drawable.img4),
-            Movie(102, "The Martian", "Survival on Mars", R.drawable.img1)
+            Movie(101, "Back to the future", "Time travel never goes according to plan.", R.drawable.back_to_the_future_scifi,"https://www.youtube.com/watch?v=haSbQV3dVu8"),
+            Movie(102, "Blade Runner", "They were built to serve. They chose to survive.", R.drawable.blade_runner_scifi,"https://www.youtube.com/watch?v=HJI6GRctGtY"),
+            Movie(103, "Interstellar", "Love transcends time. Hope defies gravity.", R.drawable.img4,"https://www.youtube.com/watch?v=xXOw_zbwew0"),
+            Movie(104, "3-body problem", "When science meets the unknown, humanity faces extinction—or evolution.", R.drawable.img3,"https://www.youtube.com/watch?v=P4AJS0-Lhf4"),
         )
         "Comedy" -> listOf(
-            Movie(201, "The Grand Budapest Hotel", "Comedy classic", R.drawable.budapest,"https://www.youtube.com/watch?v=1Fg5iWmQjwk"),
-            Movie(202, "Step Brothers", "Hilarious family comedy", R.drawable.img3)
+            Movie(201, "The Grand Budapest Hotel", "Check in for the charm. Stay for the chaos.", R.drawable.budapest,"https://www.youtube.com/watch?v=1Fg5iWmQjwk"),
+            Movie(202, "Rush hour", "Two cops. One city. Zero chill.", R.drawable.rushhour,"https://www.youtube.com/watch?v=qQNKZOFkV7I"),
+            Movie(203, "Police Story", "One cop. One city. Zero tolerance.", R.drawable.policestory,"https://www.youtube.com/watch?v=JkuL2n418n8"),
+            Movie(204, "Kung fu panda", "Every panda has his day.", R.drawable.panda,"https://www.youtube.com/watch?v=8y9QnS_tMkY")
         )
         "Horror" -> listOf(
-            Movie(301, "It", "Clown terror", R.drawable.img2),
-            Movie(302, "The Conjuring", "Haunted house thriller", R.drawable.img2)
+            Movie(301, "The Ring", "Watch it once. Die seven days later.", R.drawable.ring_horror,"https://www.youtube.com/watch?v=_nMQ5suNlrA"),
+            Movie(302, "Saw", "Trapped. Tested. Tormented.", R.drawable.saw_horror,"https://www.youtube.com/watch?v=EgJGlbq24Mo"),
+            Movie(303, "The shinning", "Some places are better left alone.", R.drawable.the_shining_horror,"https://www.youtube.com/watch?v=o6l48mT7AI0"),
+            Movie(304, "The exorcist", "Some battles are fought beyond this world.", R.drawable.the_exorcist_horror,"https://www.youtube.com/watch?v=-DwxgXsS1rA")
         )
         "Romance" -> listOf(
-            Movie(401, "La La Land", "Romantic musical", R.drawable.img3),
-            Movie(402, "The Notebook", "Classic love story", R.drawable.img3)
+            Movie(401, "Titanic", "Nothing on Earth could come between them.", R.drawable.titanic_romance,"https://www.youtube.com/watch?v=ASwUYKY1Ang"),
+            Movie(402, "La la land", "Dreams are calling. Will you answer?", R.drawable.lalaland_romance,"https://www.youtube.com/watch?v=K8O0QbusfU8"),
+            Movie(403, "Roman holiday", "A princess. A city. A day to remember forever.", R.drawable.roman_holiday_romance,"https://www.youtube.com/watch?v=_k5n3gCB9-c"),
+            Movie(404, "Pretty woman", "She’s not your typical fairy tale.", R.drawable.pretty_woman_romance,"https://www.youtube.com/watch?v=-llInsEagh4")
         )
         "Action" -> listOf(
-            Movie(401, "La La Land", "Romantic musical", R.drawable.img3),
-            Movie(402, "The Notebook", "Classic love story", R.drawable.img3)
+            Movie(501, "John wick", "They took everything from him. Now he’s coming for more.", R.drawable.john_wick_action,"https://www.youtube.com/watch?v=HMiRde-DfM4"),
+            Movie(502, "The matrix", "What if everything you know is a lie?", R.drawable.the_matrix_action,"https://www.youtube.com/watch?v=gDAenrA_w4E"),
+            Movie(504, "Predator", "If it bleeds, we can kill it.", R.drawable.predator_action,"https://www.youtube.com/watch?v=eQg_btC0prY"),
+            Movie(504, "Die hard", "Yippee-ki-yay, motherf**er.", R.drawable.die_hard_action,"https://www.youtube.com/watch?v=hIZlvaj7jms")
         )
         else -> emptyList()
     }
