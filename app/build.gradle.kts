@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.movieapp"
+    namespace = "com.example.moviesapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.movieapp"
+        applicationId = "com.example.moviesapp"
         minSdk = 33
         targetSdk = 35
         versionCode = 1
@@ -56,10 +56,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("io.ktor:ktor-server-core:2.3.4")
-    implementation("io.ktor:ktor-server-netty:2.3.4")
-    implementation("io.ktor:ktor-server-content-negotiation:2.3.4")
-    implementation("io.ktor:ktor-serialization-gson:2.3.4")
-    implementation("mysql:mysql-connector-java:8.0.33")
-
 }
